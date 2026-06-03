@@ -1,0 +1,38 @@
+name: Build & Push Flutter Docker Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      flutter_version:
+        description: 'Flutter version'
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: stable
+          platforms: linux/amd64
+          build-args:
+            FLUTTER_VERSION=${{ github.event.inputs.flutter_version }}
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ github.event.inputs.flutter_version }}
