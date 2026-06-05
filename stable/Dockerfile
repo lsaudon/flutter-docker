@@ -14,6 +14,7 @@ RUN apt-get update \
        ca-certificates \
        curl \
        git \
+       libsqlite3-dev \
        make \
        unzip \
        xz-utils \
